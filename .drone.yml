@@ -1,0 +1,271 @@
+---
+kind: pipeline
+name: u-boot-imx6-v2018.01-spi
+
+clone:
+  depth: 1
+
+platform:
+  os: linux
+  arch: amd64
+
+steps:
+  - name: ryver-announce-start
+    image: cloud.canister.io:5000/josua/drone-slack
+    settings:
+      webhook:
+        from_secret: ryver_webhook
+      channel: drone
+      icon_url: https://img.icons8.com/office/80/000000/test-partial-passed.png
+      template: >
+        Start building {{repo.name}}/{{build.branch}} for SPI (#{{build.number}})
+
+  - name: configure
+    image: alpine:latest
+    commands:
+    - cp configs/mx6cuboxi_defconfig configs/my_mx6cuboxi_defconfig
+    - echo "CONFIG_VERSION_VARIABLE=y" >> configs/my_mx6cuboxi_defconfig
+    - echo "CONFIG_SPL_BOOT_DEVICE_SPI_FLASH=y" >> configs/my_mx6cuboxi_defconfig
+
+  - name: build
+    image: debian:buster
+    commands:
+    - apt-get update
+    - apt-get -y install crossbuild-essential-armhf
+    - make CROSS_COMPILE=arm-linux-gnueabihf- my_mx6cuboxi_defconfig
+    - make CROSS_COMPILE=arm-linux-gnueabihf- -j4
+    - cp -v SPL spl-imx6-spi.bin
+    - cp -v u-boot.img u-boot-imx6-spi.img
+
+  - name: publish
+    image: plugins/s3
+    settings:
+      bucket: releases
+      access_key: minio
+      secret_key:
+        from_secret: minio_secret
+      source: spl-imx6-spi.bin
+      target: /
+      path_style: true
+      endpoint: http://drone.solid-build.xyz:9000
+
+  - name: ryver-announce-state
+    image: cloud.canister.io:5000/josua/drone-slack
+    settings:
+      webhook:
+        from_secret: ryver_webhook
+      channel: drone
+      icon_url: https://img.icons8.com/office/80/000000/test-partial-passed.png
+      template: >
+        {{#success build.status}}
+          {{repo.name}}/{{build.branch}} for SPI succeeded (#{{build.number}}).
+        {{else}}
+          {{repo.name}}/{{build.branch}} for SPI failed (#{{build.number}})!
+        {{/success}}
+
+image_pull_secrets:
+- docker_config_json
+
+---
+kind: pipeline
+name: u-boot-imx6-v2018.01-sdhc
+
+clone:
+  depth: 1
+
+platform:
+  os: linux
+  arch: amd64
+
+steps:
+  - name: ryver-announce-start
+    image: cloud.canister.io:5000/josua/drone-slack
+    settings:
+      webhook:
+        from_secret: ryver_webhook
+      channel: drone
+      icon_url: https://img.icons8.com/office/80/000000/test-partial-passed.png
+      template: >
+        Start building {{repo.name}}/{{build.branch}} for μSD (#{{build.number}})
+
+  - name: configure
+    image: alpine:latest
+    commands:
+    - cp configs/mx6cuboxi_defconfig configs/my_mx6cuboxi_defconfig
+    - echo "CONFIG_VERSION_VARIABLE=y" >> configs/my_mx6cuboxi_defconfig
+    - echo "CONFIG_SPL_BOOT_DEVICE_SDHC=y" >> configs/my_mx6cuboxi_defconfig
+
+  - name: build
+    image: debian:buster
+    commands:
+    - apt-get update
+    - apt-get -y install crossbuild-essential-armhf
+    - make CROSS_COMPILE=arm-linux-gnueabihf- my_mx6cuboxi_defconfig
+    - make CROSS_COMPILE=arm-linux-gnueabihf- -j4
+    - cp -v SPL spl-imx6-sdhc.bin
+    - cp -v u-boot.img u-boot-imx6-sdhc.img
+
+  - name: ryver-announce-state
+    image: cloud.canister.io:5000/josua/drone-slack
+    settings:
+      webhook:
+        from_secret: ryver_webhook
+      channel: drone
+      icon_url: https://img.icons8.com/office/80/000000/test-partial-passed.png
+      template: >
+        {{#success build.status}}
+          {{repo.name}}/{{build.branch}} for μSD succeeded (#{{build.number}}).
+        {{else}}
+          {{repo.name}}/{{build.branch}} for μSD failed (#{{build.number}})!
+        {{/success}}
+
+image_pull_secrets:
+- docker_config_json
+
+---
+kind: pipeline
+name: u-boot-imx6-v2018.01-emmc
+
+clone:
+  depth: 1
+
+platform:
+  os: linux
+  arch: amd64
+
+steps:
+  - name: ryver-announce-start
+    image: cloud.canister.io:5000/josua/drone-slack
+    settings:
+      webhook:
+        from_secret: ryver_webhook
+      channel: drone
+      icon_url: https://img.icons8.com/office/80/000000/test-partial-passed.png
+      template: >
+        Start building {{repo.name}}/{{build.branch}} for eMMC (#{{build.number}})
+
+  - name: configure
+    image: alpine:latest
+    commands:
+    - cp configs/mx6cuboxi_defconfig configs/my_mx6cuboxi_defconfig
+    - echo "CONFIG_VERSION_VARIABLE=y" >> configs/my_mx6cuboxi_defconfig
+    - echo "CONFIG_SPL_BOOT_DEVICE_MMC=y" >> configs/my_mx6cuboxi_defconfig
+
+  - name: build
+    image: debian:buster
+    commands:
+    - apt-get update
+    - apt-get -y install crossbuild-essential-armhf
+    - make CROSS_COMPILE=arm-linux-gnueabihf- my_mx6cuboxi_defconfig
+    - make CROSS_COMPILE=arm-linux-gnueabihf- -j4
+    - cp -v SPL spl-imx6-emmc.bin
+    - cp -v u-boot.img u-boot-imx6-emmc.img
+
+  - name: ryver-announce-state
+    image: cloud.canister.io:5000/josua/drone-slack
+    settings:
+      webhook:
+        from_secret: ryver_webhook
+      channel: drone
+      icon_url: https://img.icons8.com/office/80/000000/test-partial-passed.png
+      template: >
+        {{#success build.status}}
+          {{repo.name}}/{{build.branch}} for eMMC succeeded (#{{build.number}}).
+        {{else}}
+          {{repo.name}}/{{build.branch}} for eMMC failed (#{{build.number}})!
+        {{/success}}
+
+image_pull_secrets:
+- docker_config_json
+
+---
+kind: pipeline
+name: u-boot-imx6-v2018.01-sata
+
+clone:
+  depth: 1
+
+platform:
+  os: linux
+  arch: amd64
+
+steps:
+  - name: ryver-announce-start
+    image: cloud.canister.io:5000/josua/drone-slack
+    settings:
+      webhook:
+        from_secret: ryver_webhook
+      channel: drone
+      icon_url: https://img.icons8.com/office/80/000000/test-partial-passed.png
+      template: >
+        Start building {{repo.name}}/{{build.branch}} for SATA (#{{build.number}})
+
+  - name: configure
+    image: alpine:latest
+    commands:
+    - cp configs/mx6cuboxi_defconfig configs/my_mx6cuboxi_defconfig
+    - echo "CONFIG_VERSION_VARIABLE=y" >> configs/my_mx6cuboxi_defconfig
+    - echo "CONFIG_SPL_BOOT_DEVICE_SATA=y" >> configs/my_mx6cuboxi_defconfig
+
+  - name: build
+    image: debian:buster
+    commands:
+    - apt-get update
+    - apt-get -y install crossbuild-essential-armhf
+    - make CROSS_COMPILE=arm-linux-gnueabihf- my_mx6cuboxi_defconfig
+    - make CROSS_COMPILE=arm-linux-gnueabihf- -j4
+    - cp -v SPL spl-imx6-sata.bin
+    - cp -v u-boot.img u-boot-imx6-sata.img
+
+  - name: ryver-announce-state
+    image: cloud.canister.io:5000/josua/drone-slack
+    settings:
+      webhook:
+        from_secret: ryver_webhook
+      channel: drone
+      icon_url: https://img.icons8.com/office/80/000000/test-partial-passed.png
+      template: >
+        {{#success build.status}}
+          {{repo.name}}/{{build.branch}} for SATA succeeded (#{{build.number}}).
+        {{else}}
+          {{repo.name}}/{{build.branch}} for SATA failed (#{{build.number}})!
+        {{/success}}
+
+image_pull_secrets:
+- docker_config_json
+
+---
+kind: pipeline
+name: summary
+
+clone:
+  disable: true
+
+steps:
+  - name: ryver
+    image: cloud.canister.io:5000/josua/drone-slack
+    settings:
+      webhook:
+        from_secret: ryver_webhook
+      channel: drone
+      template: >
+        {{#success build.status}}
+          {{repo.name}}/{{build.branch}} succeeded for all variants. Good job!
+        {{else}}
+          {{repo.name}}/{{build.branch}} failed, too bad :(
+        {{/success}}
+        {{build.link}}
+
+image_pull_secrets:
+- docker_config_json
+
+depends_on:
+- u-boot-imx6-v2018.01-spi
+- u-boot-imx6-v2018.01-sdhc
+- u-boot-imx6-v2018.01-emmc
+- u-boot-imx6-v2018.01-sata
+
+trigger:
+  status:
+  - success
+  - failure
