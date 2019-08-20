@@ -201,6 +201,11 @@ config ENV_IS_IN_MMC
 	  set. If this value is set, it must be set to the same value as
 	  CONFIG_ENV_SIZE.
 
+config SYS_MMC_ENV_DEV
+	int "MMC Device for Environment"
+	depends on ENV_IS_IN_MMC
+	default 0
+
 config ENV_IS_IN_NAND
 	bool "Environment in a NAND device"
 	depends on !CHAIN_OF_TRUST
