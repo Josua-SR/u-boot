@@ -130,6 +130,7 @@ u32 mvebu_get_nand_clock(void)
 		return 250 * 1000000;
 }
 
+#ifdef CONFIG_ENV_IS_IN_MMC
 int mmc_get_env_dev(void)
 {
 	u32 reg;
@@ -149,3 +150,4 @@ int mmc_get_env_dev(void)
 
 	return CONFIG_SYS_MMC_ENV_DEV;
 }
+#endif
