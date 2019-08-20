@@ -206,6 +206,11 @@ config SYS_MMC_ENV_DEV
 	depends on ENV_IS_IN_MMC
 	default 0
 
+config SYS_MMC_ENV_PART
+	int "MMC Partition for Environment"
+	depends on ENV_IS_IN_MMC
+	default 0
+
 config ENV_IS_IN_NAND
 	bool "Environment in a NAND device"
 	depends on !CHAIN_OF_TRUST
