@@ -116,6 +116,21 @@
 
 #define CONFIG_MXC_UART_BASE		UART1_BASE_ADDR
 
+#define CONFIG_FSL_QSPI    /* enable the QUADSPI driver */
+#ifdef CONFIG_FSL_QSPI
+#define CONFIG_CMD_SF
+#define	CONFIG_SPI_FLASH
+#define	CONFIG_SPI_FLASH_STMICRO
+#define	CONFIG_SPI_FLASH_BAR
+#define	CONFIG_SF_DEFAULT_BUS		0
+#define	CONFIG_SF_DEFAULT_CS		0
+#define	CONFIG_SF_DEFAULT_SPEED		40000000
+#define	CONFIG_SF_DEFAULT_MODE		SPI_MODE_0
+
+#define FSL_QSPI_FLASH_SIZE		(SZ_32M)
+#define FSL_QSPI_FLASH_NUM		1
+#endif
+
 /* Monitor Command Prompt */
 #define CONFIG_SYS_CBSIZE              2048
 #define CONFIG_SYS_MAXARGS             64
