@@ -432,7 +432,7 @@
 	pinctrl-2 = <&pinctrl_usdhc3_200mhz>;
 	bus-width = <8>;
 	non-removable;
-	status = "disabled";
+	status = "okay";
 };
 
 &wdog1 {
