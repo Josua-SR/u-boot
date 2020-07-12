@@ -33,6 +33,11 @@ workspace:
   path: /work
 
 steps:
+- name: configure-fetch
+  image: alpine
+  commands:
+  - echo '<?xml version="1.0" encoding="UTF-8"?><manifest><remove-project name="SolidRun/u-boot.git"/><project path="u-boot" revision="v2018.11-solidrun-1gb" name="Josua-SR/u-boot.git" remote="github"/></manifest>' > local.xml
+
 - name: fetch
   image: container.solid-build.xyz/bsp/imx8mq-uboot-builder
   commands:
